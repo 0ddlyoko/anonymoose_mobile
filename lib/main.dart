@@ -1,13 +1,38 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/SimpleBlocObserver.dart';
+import 'package:mobile/screens/tweet/tweet.dart';
+import 'api/api.dart';
 
 void main() {
-  runApp(const MyApp());
+  BlocObserver observer = SimpleBlocObserver();
+
+  // Initialise Network
+  final dio = Dio();
+  final networkApi = NetworkApi(dio);
+
+  runApp(MyApp(networkApi: networkApi));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key, required this.networkApi});
+
+  final NetworkApi networkApi;
 
   // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return RepositoryProvider.value(
+        value: networkApi,
+      child: const MyAppView(),
+    );
+  }
+}
+
+class MyAppView extends StatelessWidget {
+  const MyAppView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -101,6 +126,13 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).push(TweetPage.route(
+                networkApi: context.read<NetworkApi>(),
+                tweetId: "449a0d6f-2f63-4d3f-8638-d5a011af6657",
+              )),
+              child: const Text("CLICKS"),
             ),
           ],
         ),
