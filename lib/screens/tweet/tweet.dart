@@ -8,12 +8,14 @@ import 'package:mobile/screens/tweet/bloc/tweet_bloc.dart';
 import 'package:mobile/widgets/empty_widget.dart';
 import 'package:mobile/widgets/loader_widget.dart';
 
+import 'new/new_tweet.dart';
+
 class TweetPage extends StatelessWidget {
   const TweetPage({super.key});
 
   static Route<void> route({required NetworkApi networkApi, required String tweetId}) {
     return MaterialPageRoute(
-      fullscreenDialog: true,
+      fullscreenDialog: false,
       builder: (context) => BlocProvider(
         create: (_) => TweetBloc(
             api: networkApi,
@@ -35,6 +37,14 @@ class TweetPage extends StatelessWidget {
             title: loaded ? Text("Tweet - ${tweet?.title}") : const Text("Tweet"),
           ),
           body: loaded ? const TweetView() : const LoaderWidget(),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => Navigator.of(context).push(NewTweetPage.route(
+              networkApi: context.read<NetworkApi>(),
+              tweetId: state.tweetId,
+            )),
+            tooltip: 'Comment',
+            child: const Icon(Icons.add),
+          )
         );
       },
     );

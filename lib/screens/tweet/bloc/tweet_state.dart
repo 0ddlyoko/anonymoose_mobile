@@ -5,11 +5,11 @@ enum TweetStatus { initial, loadComments, success, error }
 class TweetState extends Equatable {
   final TweetStatus status;
   final String tweetId;
-  Tweet? tweet;
+  final Tweet? tweet;
   final Tweet? parent;
   final List<Tweet> children;
 
-  TweetState({
+  const TweetState({
     this.status = TweetStatus.initial,
     required this.tweetId,
     this.tweet,
