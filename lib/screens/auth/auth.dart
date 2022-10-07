@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:mobile/api/api.dart';
@@ -25,11 +26,15 @@ class AuthPage extends StatelessWidget {
           callback: callback,
        ),
        child: BlocListener<AuthBloc, AuthState>(
-         // listenWhen: (previous, current) => previous.status != current.status && current.status == AuthStatus.success,
+         listenWhen: (previous, current) => previous.status != current.status && current.status == AuthStatus.success,
          listener: (context, state) {
            // Close this
-           print("CLOSING");
-           Navigator.of(context).pop();
+           NavigatorState nav = Navigator.of(context);
+           if (nav.canPop()) {
+             nav.pop();
+           } else {
+             SystemNavigator.pop();
+           }
          },
          child: const AuthPage(),
        ),
@@ -41,8 +46,6 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        if (state.status == AuthStatus.invalidToken)
-          print("ERROR: invalidToken 1");
         switch (state.status) {
           case AuthStatus.initial:
           case AuthStatus.invalidToken:
@@ -51,9 +54,6 @@ class AuthPage extends StatelessWidget {
               userAgent: 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) '
                   'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36',
               javascriptMode: JavascriptMode.unrestricted,
-              onWebViewCreated: (controller) {
-                print("onWebViewCreated");
-              },
               navigationDelegate: (request) {
                 if (request.url.startsWith(redirectUrlWithCode)) {
                   String code = request.url.substring(redirectUrlWithCode.length);

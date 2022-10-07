@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:bloc/bloc.dart';
@@ -23,17 +24,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   NetworkApi api;
   Function callback;
 
-  void _onAuthGotCode(AuthGotCode event, Emitter<AuthState> emit) async {
+  Future<void> _onAuthGotCode(AuthGotCode event, Emitter<AuthState> emit) async {
     // Get the code, then call the original method
     emit(state.copyWith(status: AuthStatus.loading));
     String url = "$tokenUrl&code=${event.code}";
-    final response = await http.post(Uri.parse(url), body: {}, headers: {'Content-Type': 'application/x-www-form-urlencoded'});
-    if (response.statusCode != 200) {
+    await http.post(Uri.parse(url), body: {}, headers: {'Content-Type': 'application/x-www-form-urlencoded'}).then((response) async {
+      if (response.statusCode != 200) {
+        emit(state.copyWith(status: AuthStatus.invalidToken));
+        return;
+      }
+      final tokenData = json.decode(response.body);
+      emit(state.copyWith(status: AuthStatus.success));
+      callback(tokenData);
+    }).onError((error, stackTrace) {
       emit(state.copyWith(status: AuthStatus.invalidToken));
       return;
-    }
-    final tokenData = json.decode(response.body);
-    emit(state.copyWith(status: AuthStatus.success));
-    callback(tokenData);
+    });
   }
 }
