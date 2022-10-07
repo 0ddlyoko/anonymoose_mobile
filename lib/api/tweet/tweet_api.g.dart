@@ -84,12 +84,12 @@ class _TweetApi implements TweetApi {
   }
 
   @override
-  Future<Tweet> postComment(tweetId, createTweetAuthor) async {
+  Future<Tweet> postComment(tweetId, createTweetComment) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(createTweetAuthor.toJson());
+    _data.addAll(createTweetComment.toJson());
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<Tweet>(
             Options(method: 'POST', headers: _headers, extra: _extra)

@@ -40,7 +40,7 @@ class NetworkApi implements ProfileApi, TweetApi, UserApi {
   Future<TweetList> getComments(String tweetId) => tweetApi.getComments(tweetId);
 
   @override
-  Future<Tweet> postComment(String tweetId, CreateTweetAuthor createTweetAuthor) => tweetApi.postComment(tweetId, createTweetAuthor);
+  Future<Tweet> postComment(String tweetId, CreateTweetComment createTweetComment) => tweetApi.postComment(tweetId, createTweetComment);
 
   @override
   Future<UserList> getUsers() => userApi.getUsers();

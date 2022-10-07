@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:mobile/api/api.dart';
-import 'package:mobile/models/tweet/tweet.dart';
-import 'package:mobile/screens/tweet/bloc/tweet_bloc.dart';
-import 'package:mobile/widgets/empty_widget.dart';
-import 'package:mobile/widgets/loader_widget.dart';
 
 import 'bloc/new_tweet_bloc.dart';
 
@@ -32,25 +28,21 @@ class NewTweetPage extends StatelessWidget {
       appBar: AppBar(
         actions: [
           Padding(
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.fromLTRB(0, 8, 16, 8),
             child: TextButton(
-              child: const Text("Tweeter"),
               onPressed: () {
-                // TODO
+                context.read<NewTweetBloc>().add(NewTweetSubmitted());
               },
+              style: ButtonStyle(
+                padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 5, horizontal: 10)),
+              ),
+              child: const Text("Tweeter", style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
       ),
       body: const NewTweetView(),
     );
-    // return BlocBuilder<NewTweetBloc, NewTweetState>(
-    //   builder: (context, state) {
-    //     return Scaffold(
-    //       appBar: ,
-    //     );
-    //   },
-    // );
   }
 }
 
@@ -106,12 +98,13 @@ class NewTweetView extends StatelessWidget {
                     child: TextFormField(
                       autofocus: true,
                       obscureText: false,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: "Title",
                         contentPadding: EdgeInsetsDirectional.fromSTEB(16, 0, 16, 12),
                       ),
                       textAlign: TextAlign.start,
                       maxLines: 1,
+                      onChanged: (title) => context.read<NewTweetBloc>().add(NewTweetTitleChanged(title)),
                     ),
                   ),
                 ),
@@ -121,14 +114,14 @@ class NewTweetView extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     child: TextFormField(
-                      autofocus: true,
                       obscureText: false,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: "Your tweet",
                         contentPadding: EdgeInsetsDirectional.fromSTEB(16, 0, 16, 12),
                       ),
                       textAlign: TextAlign.start,
                       maxLines: 7,
+                      onChanged: (desc) => context.read<NewTweetBloc>().add(NewTweetDescriptionChanged(desc)),
                     ),
                   ),
                 ),

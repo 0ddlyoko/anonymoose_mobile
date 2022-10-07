@@ -25,5 +25,5 @@ abstract class TweetApi {
   Future<TweetList> getComments(@Path() String tweetId);
 
   @POST("/tweet/{tweetId}/comment")
-  Future<Tweet> postComment(@Path() String tweetId, @Body() CreateTweetAuthor createTweetAuthor);
+  Future<Tweet> postComment(@Path() String tweetId, @Body() CreateTweetComment createTweetComment);
 }

@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:mobile/api/api.dart';
+import 'package:mobile/models/tweet/create_tweet.dart';
 
 part 'new_tweet_event.dart';
 part 'new_tweet_state.dart';
@@ -17,6 +18,7 @@ class NewTweetBloc extends Bloc<NewTweetEvent, NewTweetState> {
     on<NewTweetDisplayChanged>(_onTweetDisplayChanged);
     on<NewTweetTitleChanged>(_onTweetTitleChanged);
     on<NewTweetDescriptionChanged>(_onTweetDescriptionChanged);
+    on<NewTweetSubmitted>(_onNewTweetSubmitted);
   }
 
   final NetworkApi api;
@@ -31,5 +33,30 @@ class NewTweetBloc extends Bloc<NewTweetEvent, NewTweetState> {
 
   void _onTweetDescriptionChanged(NewTweetDescriptionChanged event, Emitter<NewTweetState> emit) {
     emit(state.copyWith(description: event.description));
+  }
+
+  void _onNewTweetSubmitted(NewTweetSubmitted event, Emitter<NewTweetState> emit) async {
+    emit(state.copyWith(status: NewTweetStatus.sending));
+    if (state.tweetId != null) {
+      api.postComment(state.tweetId!, CreateTweetComment(
+        title: state.title,
+        text: state.description,
+        author: CreateTweetAuthor(hidden: !state.display),
+      )).then((value) {
+        emit(state.copyWith(status: NewTweetStatus.success));
+      }).onError((error, stackTrace) {
+        emit(state.copyWith(status: NewTweetStatus.error));
+      });
+    } else {
+      api.createTweet(CreateTweet(
+        title: state.title,
+        text: state.description,
+        author: CreateTweetAuthor(hidden: !state.display),
+      )).then((value) {
+        emit(state.copyWith(status: NewTweetStatus.success));
+      }).onError((error, stackTrace) {
+        emit(state.copyWith(status: NewTweetStatus.error));
+      });
+    }
   }
 }

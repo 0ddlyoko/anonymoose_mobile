@@ -29,3 +29,9 @@ class NewTweetDescriptionChanged extends NewTweetEvent {
   @override
   List<Object?> get props => [description];
 }
+
+class NewTweetSubmitted extends NewTweetEvent {
+
+  @override
+  List<Object?> get props => [];
+}

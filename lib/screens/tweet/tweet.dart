@@ -4,10 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:mobile/api/api.dart';
 import 'package:mobile/models/tweet/tweet.dart';
-import 'package:mobile/screens/tweet/bloc/tweet_bloc.dart';
 import 'package:mobile/widgets/empty_widget.dart';
 import 'package:mobile/widgets/loader_widget.dart';
 
+import 'bloc/tweet_bloc.dart';
 import 'new/new_tweet.dart';
 
 class TweetPage extends StatelessWidget {
