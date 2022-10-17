@@ -12,18 +12,18 @@ abstract class TweetApi {
   factory TweetApi(Dio dio, {String baseUrl}) = _TweetApi;
 
   @GET("/tweet")
-  Future<TweetList> getTweets();
+  Future<HttpResponse<TweetList>> getTweets();
 
   @POST("/tweet")
   @FormUrlEncoded()
-  Future<Tweet> createTweet(@Body() CreateTweet createTweet);
+  Future<HttpResponse<Tweet>> createTweet(@Body() CreateTweet createTweet);
 
   @GET("/tweet/{tweetId}")
-  Future<Tweet> getTweet(@Path() String tweetId);
+  Future<HttpResponse<Tweet>> getTweet(@Path() String tweetId);
 
   @GET("/tweet/{tweetId}/comment")
-  Future<TweetList> getComments(@Path() String tweetId);
+  Future<HttpResponse<TweetList>> getComments(@Path() String tweetId);
 
   @POST("/tweet/{tweetId}/comment")
-  Future<Tweet> postComment(@Path() String tweetId, @Body() CreateTweetComment createTweetComment);
+  Future<HttpResponse<Tweet>> postComment(@Path() String tweetId, @Body() CreateTweetComment createTweetComment);
 }

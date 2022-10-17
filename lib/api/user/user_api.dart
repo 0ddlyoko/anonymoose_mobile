@@ -12,11 +12,11 @@ abstract class UserApi {
   factory UserApi(Dio dio, {String baseUrl}) = _UserApi;
 
   @GET("/user")
-  Future<UserList> getUsers();
+  Future<HttpResponse<UserList>> getUsers();
 
   @GET("/user/{userId}")
-  Future<User> getUser(@Path("userId") String userId);
+  Future<HttpResponse<User>> getUser(@Path("userId") String userId);
 
   @GET("/user/{userId}/tweet")
-  Future<TweetList> getUserTweets(@Path("userId") String userId);
+  Future<HttpResponse<TweetList>> getUserTweets(@Path("userId") String userId);
 }

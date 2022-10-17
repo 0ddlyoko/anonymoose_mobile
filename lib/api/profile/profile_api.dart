@@ -10,9 +10,9 @@ abstract class ProfileApi {
   factory ProfileApi(Dio dio, {String baseUrl}) = _ProfileApi;
 
   @GET("/profile")
-  Future<Profile> getProfile();
+  Future<HttpResponse<Profile>> getProfile();
 
   @POST("/profile")
   @FormUrlEncoded()
-  Future<Profile> createProfile();
+  Future<HttpResponse<Profile>> createProfile();
 }

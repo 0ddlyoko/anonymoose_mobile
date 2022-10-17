@@ -6,12 +6,12 @@ part 'profile.g.dart';
 class Profile {
   String id;
   String name;
-  String picture;
+  String email;
 
   Profile({
     required this.id,
     required this.name,
-    required this.picture,
+    required this.email,
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);

@@ -38,7 +38,7 @@ class NewTweetBloc extends Bloc<NewTweetEvent, NewTweetState> {
   void _onNewTweetSubmitted(NewTweetSubmitted event, Emitter<NewTweetState> emit) async {
     emit(state.copyWith(status: NewTweetStatus.sending));
     if (state.tweetId != null) {
-      api.postComment(state.tweetId!, CreateTweetComment(
+      return await api.postComment(state.tweetId!, CreateTweetComment(
         title: state.title,
         text: state.description,
         author: CreateTweetAuthor(hidden: !state.display),
@@ -48,7 +48,7 @@ class NewTweetBloc extends Bloc<NewTweetEvent, NewTweetState> {
         emit(state.copyWith(status: NewTweetStatus.error));
       });
     } else {
-      api.createTweet(CreateTweet(
+      return await api.createTweet(CreateTweet(
         title: state.title,
         text: state.description,
         author: CreateTweetAuthor(hidden: !state.display),

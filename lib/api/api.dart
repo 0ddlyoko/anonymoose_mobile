@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:retrofit/retrofit.dart';
 import 'package:mobile/models/profile/profile.dart';
 import 'package:mobile/models/tweet/create_tweet.dart';
 import 'package:mobile/models/tweet/tweet.dart';
@@ -12,42 +13,43 @@ import 'tweet/tweet_api.dart';
 import 'user/user_api.dart';
 
 class NetworkApi implements ProfileApi, TweetApi, UserApi {
+  final Dio dio;
   final ProfileApi profileApi;
   final TweetApi tweetApi;
   final UserApi userApi;
 
-  NetworkApi(Dio dio, {String baseUrl = apiUrl}):
+  NetworkApi(this.dio, {String baseUrl = apiUrl}):
         profileApi = ProfileApi(dio, baseUrl: baseUrl),
         tweetApi = TweetApi(dio, baseUrl: baseUrl),
         userApi = UserApi(dio, baseUrl: baseUrl);
 
   @override
-  Future<Profile> getProfile() => profileApi.getProfile();
+  Future<HttpResponse<Profile>> getProfile() => profileApi.getProfile();
 
   @override
-  Future<Profile> createProfile() => profileApi.createProfile();
+  Future<HttpResponse<Profile>> createProfile() => profileApi.createProfile();
 
   @override
-  Future<TweetList> getTweets() => tweetApi.getTweets();
+  Future<HttpResponse<TweetList>> getTweets() => tweetApi.getTweets();
 
   @override
-  Future<Tweet> createTweet(CreateTweet createTweet) => tweetApi.createTweet(createTweet);
+  Future<HttpResponse<Tweet>> createTweet(CreateTweet createTweet) => tweetApi.createTweet(createTweet);
 
   @override
-  Future<Tweet> getTweet(String tweetId) => tweetApi.getTweet(tweetId);
+  Future<HttpResponse<Tweet>> getTweet(String tweetId) => tweetApi.getTweet(tweetId);
 
   @override
-  Future<TweetList> getComments(String tweetId) => tweetApi.getComments(tweetId);
+  Future<HttpResponse<TweetList>> getComments(String tweetId) => tweetApi.getComments(tweetId);
 
   @override
-  Future<Tweet> postComment(String tweetId, CreateTweetComment createTweetComment) => tweetApi.postComment(tweetId, createTweetComment);
+  Future<HttpResponse<Tweet>> postComment(String tweetId, CreateTweetComment createTweetComment) => tweetApi.postComment(tweetId, createTweetComment);
 
   @override
-  Future<UserList> getUsers() => userApi.getUsers();
+  Future<HttpResponse<UserList>> getUsers() => userApi.getUsers();
 
   @override
-  Future<User> getUser(String userId) => userApi.getUser(userId);
+  Future<HttpResponse<User>> getUser(String userId) => userApi.getUser(userId);
 
   @override
-  Future<TweetList> getUserTweets(String userId) => userApi.getUserTweets(userId);
+  Future<HttpResponse<TweetList>> getUserTweets(String userId) => userApi.getUserTweets(userId);
 }
