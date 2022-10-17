@@ -12,6 +12,9 @@ Tweet _$TweetFromJson(Map<String, dynamic> json) => Tweet(
       text: json['text'] as String,
       parent: json['parent'] as String?,
       author: TweetAuthor.fromJson(json['author'] as Map<String, dynamic>),
+      comments: json['comments'] == null
+          ? null
+          : TweetComments.fromJson(json['comments'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$TweetToJson(Tweet instance) => <String, dynamic>{
@@ -20,6 +23,7 @@ Map<String, dynamic> _$TweetToJson(Tweet instance) => <String, dynamic>{
       'text': instance.text,
       'parent': instance.parent,
       'author': instance.author.toJson(),
+      'comments': instance.comments?.toJson(),
     };
 
 TweetAuthor _$TweetAuthorFromJson(Map<String, dynamic> json) => TweetAuthor(
@@ -35,4 +39,14 @@ Map<String, dynamic> _$TweetAuthorToJson(TweetAuthor instance) =>
       'name': instance.name,
       'hidden': instance.hidden,
       'picture': instance.picture,
+    };
+
+TweetComments _$TweetCommentsFromJson(Map<String, dynamic> json) =>
+    TweetComments(
+      size: json['size'] as int,
+    );
+
+Map<String, dynamic> _$TweetCommentsToJson(TweetComments instance) =>
+    <String, dynamic>{
+      'size': instance.size,
     };

@@ -1,6 +1,6 @@
 part of 'main_bloc.dart';
 
-enum AppStatus { notLogged, loading, logged, error }
+enum AppStatus { notLogged, loading, logged, done, error }
 
 class AppState extends Equatable {
   final AppStatus status;
@@ -9,6 +9,7 @@ class AppState extends Equatable {
   final String id;
   final String name;
   final String email;
+  final List<Tweet> tweets;
 
   const AppState({
     this.status = AppStatus.notLogged,
@@ -17,6 +18,7 @@ class AppState extends Equatable {
     this.id = "",
     this.name = "",
     this.email = "",
+    this.tweets = const [],
   });
 
   AppState copyWith({
@@ -26,6 +28,7 @@ class AppState extends Equatable {
     String? id,
     String? name,
     String? email,
+    List<Tweet>? tweets,
   }) {
     return AppState(
       status: status ?? this.status,
@@ -34,9 +37,10 @@ class AppState extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
+      tweets: tweets ?? this.tweets,
     );
   }
 
   @override
-  List<Object?> get props => [status, code, errorMessage, id, name, email];
+  List<Object?> get props => [status, code, errorMessage, id, name, email, tweets];
 }

@@ -22,10 +22,13 @@ class TweetBloc extends Bloc<TweetEvent, TweetState> {
 
   void _onTweetLoadEvent(TweetLoadEvent event, Emitter<TweetState> emit) async {
     // Load tweet
-    await api.getTweet(state.tweetId)
+    return await api.getTweet(state.tweetId)
       .then((value) async {
         emit(state.copyWith(status: TweetStatus.loadComments, tweet: value.data));
-        // Load children
+        // Load children if needed
+        if (state.tweet?.comments?.size == 0) {
+          return emit(state.copyWith(status: TweetStatus.success));
+        }
         return await api.getComments(state.tweetId).then((value) => emit(state.copyWith(status: TweetStatus.success, children: value.data.items)));
       })
         .onError((error, stackTrace) => emit(state.copyWith(status: TweetStatus.error)));

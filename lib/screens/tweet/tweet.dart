@@ -7,6 +7,7 @@ import 'package:mobile/models/tweet/tweet.dart';
 import 'package:mobile/widgets/empty_widget.dart';
 import 'package:mobile/widgets/loader_widget.dart';
 
+import '../../widgets/single_tweet.dart';
 import 'bloc/tweet_bloc.dart';
 import 'new/new_tweet.dart';
 
@@ -18,8 +19,8 @@ class TweetPage extends StatelessWidget {
       fullscreenDialog: false,
       builder: (context) => BlocProvider(
         create: (_) => TweetBloc(
-            api: networkApi,
-            tweetId: tweetId,
+          api: networkApi,
+          tweetId: tweetId,
         )..add(TweetLoadEvent()),
         child: const TweetPage(),
       ),
@@ -28,25 +29,35 @@ class TweetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TweetBloc, TweetState>(
-      builder: (context, state) {
-        bool loaded = state.status != TweetStatus.initial;
-        Tweet? tweet = state.tweet;
-        return Scaffold(
-          appBar: AppBar(
-            title: loaded ? Text("Tweet - ${tweet?.title}") : const Text("Tweet"),
+    return BlocListener<TweetBloc, TweetState>(
+      listenWhen: (previous, current) => previous.status != current.status && current.status == TweetStatus.error,
+      listener: (context, state) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("An error has occured, please try again later"),
           ),
-          body: loaded ? const TweetView() : const LoaderWidget(),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => Navigator.of(context).push(NewTweetPage.route(
-              networkApi: context.read<NetworkApi>(),
-              tweetId: state.tweetId,
-            )),
-            tooltip: 'Comment',
-            child: const Icon(Icons.add),
-          )
         );
       },
+      child: BlocBuilder<TweetBloc, TweetState>(
+        builder: (context, state) {
+          bool loaded = state.status == TweetStatus.loadComments || state.status == TweetStatus.success;
+          Tweet? tweet = state.tweet;
+          return Scaffold(
+              appBar: AppBar(
+                title: loaded ? Text("Tweet - ${tweet?.title}") : const Text("Tweet"),
+              ),
+              body: loaded ? const TweetView() : const LoaderWidget(),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () => Navigator.of(context).push(NewTweetPage.route(
+                  networkApi: context.read<NetworkApi>(),
+                  tweetId: state.tweetId,
+                )),
+                tooltip: 'Comment',
+                child: const Icon(Icons.add),
+              )
+          );
+        },
+      ),
     );
   }
 }
@@ -134,7 +145,7 @@ class IconTweetView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final number = context.select((TweetBloc tweetBloc) => tweetBloc.state.children.length);
+    final number = context.select((TweetBloc tweetBloc) => tweetBloc.state.tweet?.comments?.size);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -151,8 +162,6 @@ class IconTweetView extends StatelessWidget {
         ),
       ],
     );
-
-    // return Text(number.toString());
   }
 }
 
@@ -175,87 +184,17 @@ class CommentsView extends StatelessWidget {
                 if (state.children.isEmpty) {
                   return const EmptyWidget();
                 }
-                return ListView.builder(
+                return ListView.separated(
+                  separatorBuilder: (ctx, idx) => const Divider(),
+                  itemCount: state.children.length,
                   itemBuilder: (context, index) {
-                    if (index % 2 == 1) {
-                      return const Divider(indent: 20, endIndent: 20);
-                    }
                     return CommentView(tweet: state.children[index ~/ 2]);
                   },
-                  itemCount: state.children.length * 2 - 1,
                   // physics: const ClampingScrollPhysics(),
                   shrinkWrap: true,
                 );
             }
           },
-        ),
-      ],
-    );
-  }
-}
-
-class CommentView extends StatelessWidget {
-  const CommentView({super.key, required this.tweet});
-
-  final Tweet tweet;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // Image on the left
-        Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              child: Image.network(
-                "https://cdn.discordapp.com/avatars/304694488394235924/53455de4a44b1f37cacc185591231d9a.webp",
-                width: 50,
-                height: 50,
-              ),
-            ),
-          ],
-        ),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Text(tweet.author.name),
-                    const Text(" · ", style: TextStyle(color: Colors.grey)),
-                    Text("2 h", style: TextStyle(color: Colors.grey)),
-                  ],
-                ),
-                InkWell(
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          child: Text(
-                            tweet.title,
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 5),
-                          child: Text(tweet.text),
-                        )
-                      ],
-                    ),
-                  ),
-                  onTap: () => Navigator.of(context).push(TweetPage.route(
-                    networkApi: context.read<NetworkApi>(),
-                    tweetId: tweet.id,
-                  )),
-                ),
-              ],
-            ),
-          ),
         ),
       ],
     );

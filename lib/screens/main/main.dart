@@ -6,6 +6,7 @@ import 'package:mobile/api/api.dart';
 import 'package:mobile/screens/auth/auth.dart';
 import 'package:mobile/screens/tweet/tweet.dart';
 import 'package:mobile/widgets/loader_widget.dart';
+import 'package:mobile/widgets/single_tweet.dart';
 
 import 'bloc/main_bloc.dart';
 
@@ -66,7 +67,9 @@ class MainPage extends StatelessWidget {
               print("loading");
               return const LoaderWidget();
             case AppStatus.logged:
-              return const TestPage();
+              return const LoaderWidget();
+            case AppStatus.done:
+              return const TweetsPage();
             case AppStatus.error:
               return const NotLoggedPage();
           }
@@ -99,6 +102,26 @@ class NotLoggedPage extends StatelessWidget {
           ),
         ],
       )
+    );
+  }
+}
+
+class TweetsPage extends StatelessWidget {
+  const TweetsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final AppBloc bloc = context.read<AppBloc>();
+    return CupertinoScrollbar(
+      child: ListView.separated(
+        separatorBuilder: (ctx, idx) => const Divider(),
+        itemCount: bloc.state.tweets.length,
+        itemBuilder: (ctx, idx) {
+          return CommentView(
+            tweet: bloc.state.tweets[idx],
+          );
+        },
+      ),
     );
   }
 }
